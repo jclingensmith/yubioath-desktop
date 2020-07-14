@@ -160,6 +160,14 @@ Flickable {
                 SettingsPanelPasswordMgmt {}
                 SettingsPanelResetDevice {}
             }
+
+            StyledExpansionContainer {
+                title: qsTr("One-Time Password (OTP)")
+
+                SettingsPanelOtp { slot: 1 }
+                SettingsPanelOtp { slot: 2 }
+                SettingsPanelOtpSwap {}
+            }
         }
     }
 }
