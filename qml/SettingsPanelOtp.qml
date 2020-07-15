@@ -7,10 +7,8 @@ import QtGraphicalEffects 1.0
 StyledExpansionPanel {
     id: otpConfigurationPanel
     label: slot === 1 ? qsTr("Short touch (slot 1)") : qsTr("Long touch (slot 2)")
-    description: getDescription()
+    description: isSlotConfigured(slot) ? qsTr("Slot is programmed") : qsTr("Slot is empty")
     isVisible: yubiKey.currentDeviceEnabled("OATH")
-
-    property bool isBusy
 
     property int slot: 1
 
@@ -18,22 +16,12 @@ StyledExpansionPanel {
     property bool credentialTypeChallengeResponse: credentialTypeCombobox.currentIndex === 2
     property bool credentialTypeStaticPassword: credentialTypeCombobox.currentIndex === 3
     property bool credentialTypeOATHHOTP: credentialTypeCombobox.currentIndex === 4
+    property bool slotConfigured
 
-    property string slot1Configured: qsTr("Slot is empty")
-    property string slot2Configured: qsTr("Slot is empty")
-
-    function getDescription() {
-        isBusy = true
+    function isSlotConfigured(slot) {
         yubiKey.slotsStatus(function (resp) {
             if (resp.success) {
-                if (resp.status[0]) {
-                    slot1Configured = qsTr("Slot is programmed")
-                }
-                if (resp.status[1]) {
-                    slot2Configured = qsTr("Slot is programmed")
-                }
-
-                isBusy = false
+                slotConfigured = resp.status[slot-1]
             } else {
                 if (resp.error_id === 'timeout') {
                     navigator.snackBarError(qsTr("Failed to load OTP application"))
@@ -45,10 +33,7 @@ StyledExpansionPanel {
                 navigator.home()
             }
         })
-        if (slot == 1)
-            return slot1Configured
-        else
-            return slot2Configured
+        return slotConfigured
     }
 
     function confirmDelete() {
@@ -58,7 +43,6 @@ StyledExpansionPanel {
             "acceptedCb": function () {
                 yubiKey.eraseSlot(slot, function (resp) {
                     if (resp.success) {
-                        getDescription()
                         navigator.snackBar(qsTr("Configured interfaces"))
                     } else {
                         if (resp.error_id === 'write error') {
@@ -167,7 +151,7 @@ StyledExpansionPanel {
 
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
-            enabled: slot == 1 ? (slot1Configured === qsTr("Slot is programmed") ) : (slot2Configured === qsTr("Slot is programmed"))
+            enabled: slotConfigured
             text: "Delete"
             onClicked: {
                 confirmDelete()
