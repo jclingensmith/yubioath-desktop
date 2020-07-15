@@ -7,10 +7,11 @@ import QtGraphicalEffects 1.0
 StyledExpansionPanel {
     id: otpConfigurationPanel
     label: slot === 1 ? qsTr("Short touch (slot 1)") : qsTr("Long touch (slot 2)")
-    description: isSlotConfigured(slot) ? qsTr("Slot is programmed") : qsTr("Slot is empty")
+    description: updateCounter && isSlotConfigured(slot) ? qsTr("Slot is programmed") : qsTr("Slot is empty")
     isVisible: yubiKey.currentDeviceEnabled("OATH")
 
     property int slot: 1
+    property int updateCounter: 1
 
     property bool credentialTypeYubicoOTP: credentialTypeCombobox.currentIndex === 1
     property bool credentialTypeChallengeResponse: credentialTypeCombobox.currentIndex === 2
@@ -22,6 +23,7 @@ StyledExpansionPanel {
         yubiKey.slotsStatus(function (resp) {
             if (resp.success) {
                 slotConfigured = resp.status[slot-1]
+                updateCounter++
             } else {
                 if (resp.error_id === 'timeout') {
                     navigator.snackBarError(qsTr("Failed to load OTP application"))
