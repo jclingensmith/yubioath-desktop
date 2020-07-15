@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 StyledExpansionPanel {
     id: otpConfigurationPanel
-    label: slot === 1 ? qsTr("Short touch (slot 1)") : qsTr("Long touch (slot 2)")
+    label: slot === 0 ? qsTr("Short touch (slot 1)") : qsTr("Long touch (slot 2)")
     description: updateCounter && isSlotConfigured(slot) ? qsTr("Slot is programmed") : qsTr("Slot is empty")
     isVisible: yubiKey.currentDeviceEnabled("OATH")
 
@@ -22,8 +22,7 @@ StyledExpansionPanel {
     function isSlotConfigured(slot) {
         yubiKey.slotsStatus(function (resp) {
             if (resp.success) {
-                slotConfigured = resp.status[slot-1]
-                updateCounter++
+                slotConfigured = resp.status[slot]
             } else {
                 if (resp.error_id === 'timeout') {
                     navigator.snackBarError(qsTr("Failed to load OTP application"))
@@ -43,8 +42,9 @@ StyledExpansionPanel {
             "heading": qsTr("Delete configuration?"),
             "message": qsTr("Do you want to delete the content of %1? This permanently deletes the configuration.").arg(label),
             "acceptedCb": function () {
-                yubiKey.eraseSlot(slot, function (resp) {
+                yubiKey.eraseSlot(slot+1, function (resp) {
                     if (resp.success) {
+                        updateCounter++
                         navigator.snackBar(qsTr("Configured interfaces"))
                     } else {
                         if (resp.error_id === 'write error') {
