@@ -7,8 +7,10 @@ import QtGraphicalEffects 1.0
 StyledExpansionPanel {
     id: otpConfigurationPanel
     label: slot === 1 ? qsTr("Short touch (slot 1)") : qsTr("Long touch (slot 2)")
-    description: slot === 1 ? qsTr("Slot is programmed") : "Slot is empty" // FIX HARDCODED!
+    description: getDescription()
     isVisible: yubiKey.currentDeviceEnabled("OATH")
+
+    property bool isBusy
 
     property int slot: 1
 
@@ -16,6 +18,61 @@ StyledExpansionPanel {
     property bool credentialTypeChallengeResponse: credentialTypeCombobox.currentIndex === 2
     property bool credentialTypeStaticPassword: credentialTypeCombobox.currentIndex === 3
     property bool credentialTypeOATHHOTP: credentialTypeCombobox.currentIndex === 4
+
+    property string slot1Configured: qsTr("Slot is empty")
+    property string slot2Configured: qsTr("Slot is empty")
+
+    function getDescription() {
+        isBusy = true
+        yubiKey.slotsStatus(function (resp) {
+            if (resp.success) {
+                if (resp.status[0]) {
+                    slot1Configured = qsTr("Slot is programmed")
+                }
+                if (resp.status[1]) {
+                    slot2Configured = qsTr("Slot is programmed")
+                }
+
+                isBusy = false
+            } else {
+                if (resp.error_id === 'timeout') {
+                    navigator.snackBarError(qsTr("Failed to load OTP application"))
+                } else {
+                    navigator.snackBarError(
+                                navigator.getErrorMessage(
+                                    resp.error_id))
+                }
+                navigator.home()
+            }
+        })
+        if (slot == 1)
+            return slot1Configured
+        else
+            return slot2Configured
+    }
+
+    function confirmDelete() {
+        navigator.confirm({
+            "heading": qsTr("Delete configuration?"),
+            "message": qsTr("Do you want to delete the content of %1? This permanently deletes the configuration.").arg(label),
+            "acceptedCb": function () {
+                yubiKey.eraseSlot(slot, function (resp) {
+                    if (resp.success) {
+                        getDescription()
+                        navigator.snackBar(qsTr("Configured interfaces"))
+                    } else {
+                        if (resp.error_id === 'write error') {
+                            //views.otpWriteError()
+                        } else {
+                            //views.otpFailedToConfigureErrorPopup(resp.error_id)
+                        }
+                    }
+                })
+
+            }
+        })
+    }
+
 
     function getComboBoxIndex(digits) {
         switch (digits) {
@@ -110,7 +167,11 @@ StyledExpansionPanel {
 
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
+            enabled: slot == 1 ? (slot1Configured === qsTr("Slot is programmed") ) : (slot2Configured === qsTr("Slot is programmed"))
             text: "Delete"
+            onClicked: {
+                confirmDelete()
+            }
         }
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop

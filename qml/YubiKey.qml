@@ -242,6 +242,13 @@ Python {
         }
     }
 
+    function slotsStatus(cb) {
+        doCall('yubikey.controller.slots_status', [], cb)
+    }
+
+    function eraseSlot(slot, cb) {
+        doCall('yubikey.controller.erase_slot', [slot], cb)
+    }
 
     function checkUsbDescriptorsChanged(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)

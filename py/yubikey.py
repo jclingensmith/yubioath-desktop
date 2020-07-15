@@ -369,6 +369,15 @@ class Controller(object):
 
         return success()
 
+    def slots_status(self):
+        with self._open_otp() as controller:
+            return success({'status': controller.slot_status})
+
+    def erase_slot(self, slot):
+        with self._open_otp() as controller:
+            controller.zap_slot(slot)
+        return success()
+
     def set_mode(self, interfaces):
         with open_device(serial=self._current_serial) as dev:
             transports = sum([TRANSPORT[i] for i in interfaces])
