@@ -250,6 +250,15 @@ Python {
         doCall('yubikey.controller.erase_slot', [slot], cb)
     }
 
+    function programStaticPassword(slot, password, keyboardLayout, cb) {
+        doCall('yubikey.controller.program_static_password',
+               [slot, password, keyboardLayout], cb)
+    }
+
+    function generateStaticPw(keyboardLayout, cb) {
+        doCall('yubikey.controller.generate_static_pw', [keyboardLayout], cb)
+    }
+
     function checkUsbDescriptorsChanged(cb) {
         doCall('yubikey.controller.check_descriptors', [], cb)
     }

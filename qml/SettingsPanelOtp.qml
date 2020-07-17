@@ -19,6 +19,8 @@ StyledExpansionPanel {
     property bool credentialTypeOATHHOTP: credentialTypeCombobox.currentIndex === 4
     property bool slotConfigured
 
+    property string keyboardLayout: 'US'
+
     function isSlotConfigured(slot) {
         yubiKey.slotsStatus(function (resp) {
             if (resp.success) {
@@ -141,10 +143,7 @@ StyledExpansionPanel {
     ColumnLayout {
         visible: otpConfigurationPanel.credentialTypeStaticPassword
 
-        StyledTextField {
-            id: otpStaticPassword
-            labelText: qsTr("Password")
-        }
+        SettingsPanelOtpStatic{id: otpStaticPassword}
     }
 
     RowLayout {
@@ -162,6 +161,10 @@ StyledExpansionPanel {
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             text: "Apply"
+            onClicked: {
+                otpStaticPassword.programStaticPassword(slot+1, keyboardLayout)
+                updateCounter++
+            }
         }
     }
 }

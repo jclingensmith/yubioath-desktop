@@ -12,7 +12,7 @@ from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
-from ykman.util import (TRANSPORT, APPLICATION, Mode, parse_b32_key)
+from ykman.util import (TRANSPORT, APPLICATION, generate_static_pw, Mode, parse_b32_key)
 from ykman.device import YubiKey, device_config
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
@@ -24,6 +24,7 @@ from ykman.oath import (
 from ykman.otp import OtpController
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
+from ykman.scancodes import KEYBOARD_LAYOUT
 
 
 logger = logging.getLogger(__name__)
@@ -377,6 +378,19 @@ class Controller(object):
         with self._open_otp() as controller:
             controller.zap_slot(slot)
         return success()
+
+    def program_static_password(self, slot, key, keyboard_layout):
+        with self._open_otp() as controller:
+            controller.program_static(
+                slot, key,
+                keyboard_layout=KEYBOARD_LAYOUT[keyboard_layout])
+        return success()
+
+    def generate_static_pw(self, keyboard_layout):
+        return success({
+            'password': generate_static_pw(
+                38, KEYBOARD_LAYOUT[keyboard_layout])
+        })
 
     def set_mode(self, interfaces):
         with open_device(serial=self._current_serial) as dev:
