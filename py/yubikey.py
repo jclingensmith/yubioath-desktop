@@ -378,6 +378,10 @@ class Controller(object):
         with self._open_otp() as controller:
             controller.zap_slot(slot)
         return success()
+    def swap_slots(self):
+        with self._open_otp() as controller:
+            controller.swap_slots()
+        return success()
 
     def program_static_password(self, slot, key, keyboard_layout):
         with self._open_otp() as controller:

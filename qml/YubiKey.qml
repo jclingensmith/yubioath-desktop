@@ -250,6 +250,10 @@ Python {
         doCall('yubikey.controller.erase_slot', [slot], cb)
     }
 
+    function swapSlots(cb) {
+        doCall('yubikey.controller.swap_slots', [], cb)
+    }
+
     function programStaticPassword(slot, password, keyboardLayout, cb) {
         doCall('yubikey.controller.program_static_password',
                [slot, password, keyboardLayout], cb)

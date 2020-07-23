@@ -22,8 +22,9 @@ RowLayout {
             if (resp.success) {
                 otpStaticPassword.text = resp.password
             } else {
-                navigator.snackBarError(resp)
-                snackbarError.showResponseError(resp)
+                navigator.snackBarError(
+                            navigator.getErrorMessage(
+                                resp.error_id))
             }
         })
     }
@@ -37,9 +38,11 @@ RowLayout {
                                                           "Configured static password")
                                           } else {
                                               if (resp.error_id === 'write error') {
-                                                  //views.otpWriteError()
+                                                  navigator.snackBar(qsTr("Failed to modify. Make sure the YubiKey does not have restricted access."))
                                               } else {
-                                                  //views.otpFailedToConfigureErrorPopup(resp.error_id)
+                                                  navigator.snackBarError(
+                                                              navigator.getErrorMessage(
+                                                                  resp.error_id))
                                               }
                                           }
                                       })

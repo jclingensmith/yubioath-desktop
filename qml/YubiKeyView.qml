@@ -164,8 +164,12 @@ Flickable {
             StyledExpansionContainer {
                 title: qsTr("One-Time Password (OTP)")
 
-                SettingsPanelOtp { slot: 0 }
-                SettingsPanelOtp { slot: 1 }
+                SettingsPanelOtp {
+                    id: otp0
+                    slot: 0 }
+                SettingsPanelOtp {
+                    id: otp1
+                    slot: 1 }
                 SettingsPanelOtpSwap {}
             }
         }

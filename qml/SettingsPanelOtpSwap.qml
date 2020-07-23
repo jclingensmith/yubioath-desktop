@@ -18,7 +18,27 @@ StyledExpansionPanel {
                                       "warning": false,
                                       "buttonAccept": qsTr("Swap"),
                                       "acceptedCb": function () {
-                                          console.log("Swap!")
+                                          swapConfigurations()
                                       }
                                 })
+
+    function swapConfigurations() {
+        yubiKey.swapSlots(function (resp) {
+            if (resp.success) {
+                otp0.updateCounter++
+                otp1.updateCounter++
+                navigator.snackBar(
+                            qsTr("Configurations swapped between slots"))
+            } else {
+                if (resp.error_id === 'write error') {
+                    snackbarError.show(
+                                qsTr("Failed to swap slots. Make sure the YubiKey does not have restricted access."))
+                } else {
+                    navigator.snackBarError(
+                           navigator.getErrorMessage(
+                               resp.error_id))
+                }
+            }
+        })
+}
 }
