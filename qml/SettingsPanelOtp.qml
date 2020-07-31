@@ -117,18 +117,7 @@ StyledExpansionPanel {
     ColumnLayout {
         visible: otpConfigurationPanel.credentialTypeYubicoOTP
 
-        StyledTextField {
-            id: otpPublicId
-            labelText: qsTr("Public id")
-        }
-        StyledTextField {
-            id: otpPrivateId
-            labelText: qsTr("Private id")
-        }
-        StyledTextField {
-            id: otpSecretKey
-            labelText: qsTr("Secret key")
-        }
+        SettingsPanelYubicoOtp{ id: yubicoOTP}
     }
 
     ColumnLayout {
@@ -162,8 +151,14 @@ StyledExpansionPanel {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             text: "Apply"
             onClicked: {
-                otpStaticPassword.programStaticPassword(slot+1)
-                updateCounter++
+                if (otpConfigurationPanel.credentialTypeStaticPassword) {
+                    otpStaticPassword.programStaticPassword(slot+1)
+                    updateCounter++
+                }
+                if (otpConfigurationPanel.credentialTypeYubicoOTP) {
+                    yubicoOTP.programYubiOtp(slot+1)
+                    updateCounter++
+                }
             }
         }
     }

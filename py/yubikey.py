@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import struct
 import json
 import logging
 import types
@@ -12,7 +14,9 @@ from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
     FailedOpeningDeviceException, Descriptor)
-from ykman.util import (TRANSPORT, APPLICATION, generate_static_pw, Mode, parse_b32_key)
+from ykman.util import (
+    TRANSPORT, APPLICATION, generate_static_pw,
+    modhex_encode, modhex_decode, Mode, parse_b32_key)
 from ykman.device import YubiKey, device_config
 from ykman.driver_otp import YkpersError
 from ykman.driver_ccid import (
@@ -378,10 +382,16 @@ class Controller(object):
         with self._open_otp() as controller:
             controller.zap_slot(slot)
         return success()
+
     def swap_slots(self):
         with self._open_otp() as controller:
             controller.swap_slots()
         return success()
+
+    def serial_modhex(self):
+        with open_device(TRANSPORT.OTP, serial=self._current_serial) as dev:
+            return modhex_encode(b'\xff\x00' + struct.pack(b'>I', dev.serial))
+
 
     def program_static_password(self, slot, key, keyboard_layout):
         with self._open_otp() as controller:
@@ -395,6 +405,25 @@ class Controller(object):
             'password': generate_static_pw(
                 38, KEYBOARD_LAYOUT[keyboard_layout])
         })
+
+    def random_uid(self):
+        return b2a_hex(os.urandom(6)).decode('ascii')
+
+    def random_key(self, bytes):
+        return b2a_hex(os.urandom(int(bytes))).decode('ascii')
+
+    def program_otp(self, slot, public_id, private_id, key,
+                    app_version='unknown'):
+        key = a2b_hex(key)
+        public_id = modhex_decode(public_id)
+        private_id = a2b_hex(private_id)
+
+        with self._open_otp() as controller:
+            controller.program_otp(slot, key, public_id, private_id)
+
+        logger.debug('YubiOTP successfully programmed.')
+
+        return success()
 
     def set_mode(self, interfaces):
         with open_device(serial=self._current_serial) as dev:

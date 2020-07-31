@@ -254,6 +254,18 @@ Python {
         doCall('yubikey.controller.swap_slots', [], cb)
     }
 
+    function serialModhex(cb) {
+        doCall('yubikey.controller.serial_modhex', [], cb)
+    }
+
+    function randomUid(cb) {
+        doCall('yubikey.controller.random_uid', [], cb)
+    }
+
+    function randomKey(bytes, cb) {
+        doCall('yubikey.controller.random_key', [bytes], cb)
+    }
+
     function programStaticPassword(slot, password, keyboardLayout, cb) {
         doCall('yubikey.controller.program_static_password',
                [slot, password, keyboardLayout], cb)
@@ -261,6 +273,11 @@ Python {
 
     function generateStaticPw(keyboardLayout, cb) {
         doCall('yubikey.controller.generate_static_pw', [keyboardLayout], cb)
+    }
+
+    function programOtp(slot, publicId, privateId, key, cb) {
+        doCall('yubikey.controller.program_otp',
+               [slot, publicId, privateId, key, appVersion], cb)
     }
 
     function checkUsbDescriptorsChanged(cb) {
