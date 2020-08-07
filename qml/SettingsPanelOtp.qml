@@ -132,6 +132,12 @@ StyledExpansionPanel {
         SettingsPanelOtpStatic{id: otpStaticPassword}
     }
 
+    ColumnLayout {
+        visible: otpConfigurationPanel.credentialTypeOATHHOTP
+
+        SettingsPanelOathHotp{ id: oathHotp}
+    }
+
     RowLayout {
         Layout.topMargin: 16
         Layout.alignment: Qt.AlignRight | Qt.AlignTop
@@ -158,6 +164,10 @@ StyledExpansionPanel {
                 }
                 if (otpConfigurationPanel.credentialTypeChallengeResponse) {
                     otpChallengeResponse.programChallengeResponse(slot+1)
+                    updateCounter++
+                }
+                if (otpConfigurationPanel.credentialTypeOATHHOTP) {
+                    oathHotp.programOathHotp(slot+1)
                     updateCounter++
                 }
             }

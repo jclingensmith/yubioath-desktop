@@ -9,7 +9,7 @@ import types
 import time
 import ykman.logging_setup
 import smartcard.pcsc.PCSCExceptions
-from base64 import b32encode, b64decode
+from base64 import b32encode, b32decode, b64decode
 from binascii import a2b_hex, b2a_hex
 from ykman.descriptor import (
     get_descriptors, list_devices, open_device,
@@ -404,6 +404,13 @@ class Controller(object):
             controller.program_static(
                 slot, key,
                 keyboard_layout=KEYBOARD_LAYOUT[keyboard_layout])
+        return success()
+
+    def program_oath_hotp(self, slot, key, digits):
+        unpadded = key.upper().rstrip('=').replace(' ', '')
+        key = b32decode(unpadded + '=' * (-len(unpadded) % 8))
+        with self._open_otp() as controller:
+            controller.program_hotp(slot, key, hotp8=(int(digits) == 8))
         return success()
 
     def generate_static_pw(self, keyboard_layout):

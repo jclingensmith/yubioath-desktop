@@ -276,6 +276,10 @@ Python {
                [slot, password, keyboardLayout], cb)
     }
 
+    function programOathHotp(slot, key, digits, cb) {
+        doCall('yubikey.controller.program_oath_hotp', [slot, key, digits], cb)
+    }
+
     function generateStaticPw(keyboardLayout, cb) {
         doCall('yubikey.controller.generate_static_pw', [keyboardLayout], cb)
     }
