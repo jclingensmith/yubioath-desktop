@@ -123,10 +123,7 @@ StyledExpansionPanel {
     ColumnLayout {
         visible: otpConfigurationPanel.credentialTypeChallengeResponse
 
-        StyledTextField {
-            id: otpChallengeResponse
-            labelText: qsTr("Secret key")
-        }
+        SettingsPanelChalResp{id: otpChallengeResponse}
     }
 
     ColumnLayout {
@@ -157,6 +154,10 @@ StyledExpansionPanel {
                 }
                 if (otpConfigurationPanel.credentialTypeYubicoOTP) {
                     yubicoOTP.programYubiOtp(slot+1)
+                    updateCounter++
+                }
+                if (otpConfigurationPanel.credentialTypeChallengeResponse) {
+                    otpChallengeResponse.programChallengeResponse(slot+1)
                     updateCounter++
                 }
             }

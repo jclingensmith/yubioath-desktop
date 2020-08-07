@@ -266,6 +266,11 @@ Python {
         doCall('yubikey.controller.random_key', [bytes], cb)
     }
 
+    function programChallengeResponse(slot, key, touch, cb) {
+        doCall('yubikey.controller.program_challenge_response',
+               [slot, key, touch], cb)
+    }
+
     function programStaticPassword(slot, password, keyboardLayout, cb) {
         doCall('yubikey.controller.program_static_password',
                [slot, password, keyboardLayout], cb)

@@ -392,6 +392,12 @@ class Controller(object):
         with open_device(TRANSPORT.OTP, serial=self._current_serial) as dev:
             return modhex_encode(b'\xff\x00' + struct.pack(b'>I', dev.serial))
 
+    def program_challenge_response(self, slot, key, touch):
+        key = a2b_hex(key)
+        with self._open_otp() as controller:
+            controller.program_chalresp(slot, key, touch)
+        return success()
+
 
     def program_static_password(self, slot, key, keyboard_layout):
         with self._open_otp() as controller:
