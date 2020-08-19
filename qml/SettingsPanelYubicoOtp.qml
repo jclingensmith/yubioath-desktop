@@ -11,13 +11,36 @@ ColumnLayout {
             labelText: qsTr("Public ID")
         }
 
-        CheckBox {
-            id: useSerialCb
-            text: qsTr("Use serial")
-            onCheckedChanged: useSerial()
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: qsTr("Use the encoded serial number of the YubiKey as Public ID")
+        ToolButton {
+            id: btnUseSerial
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+
+            onClicked: useSerial()
+            Keys.onReturnPressed: useSerial()
+            Keys.onEnterPressed: useSerial()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Use serial"
+            Accessible.description: "Use serial"
+
+            ToolTip {
+                text: qsTr("Use serial as Public ID")
+                delay: 1000
+                parent: parent
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/refresh.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
         }
     }
 
@@ -30,11 +53,36 @@ ColumnLayout {
             }
         }
 
-        StyledButton {
-            id: generatePrivateIDBtn
-            text: qsTr("Generate")
+        ToolButton {
+            id: btnGeneratePrivateId
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+
             onClicked: generatePrivateId()
-            toolTipText: qsTr("Generate a random Private ID")
+            Keys.onReturnPressed: generatePrivateId()
+            Keys.onEnterPressed: generatePrivateId()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Generate"
+            Accessible.description: "Generate a random Private ID"
+
+            ToolTip {
+                text: qsTr("Generate a random Private ID")
+                delay: 1000
+                parent: parent
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/refresh.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
         }
     }
 
@@ -46,20 +94,44 @@ ColumnLayout {
                 regExp: /[0-9a-fA-F]{32}$/
             }
         }
-        StyledButton {
-            id: generateSecretKeyBtn
-            text: qsTr("Generate")
+
+        ToolButton {
+            id: btnGenerateSecretKey
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+
             onClicked: generateSecretKey()
-            toolTipText: qsTr("Generate a random secret key")
+            Keys.onReturnPressed: generateSecretKey()
+            Keys.onEnterPressed: generateSecretKey()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Generate"
+            Accessible.description: "Generate a random secret key"
+
+            ToolTip {
+                text: qsTr("Generate a random secret key")
+                delay: 1000
+                parent: parent
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/refresh.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
         }
     }
 
     function useSerial() {
-        if (useSerialCb.checked) {
-            yubiKey.serialModhex(function (res) {
-                publicIdInput.text = res
-            })
-        }
+        yubiKey.serialModhex(function (res) {
+            publicIdInput.text = res
+        })
     }
 
     function generatePrivateId() {

@@ -13,12 +13,36 @@ ColumnLayout {
             validator: allowNonModhex.checked ? usLayoutValidator : modHexValidator
         }
 
-        StyledButton {
-            id: generatePasswordBtn
-            text: qsTr("Generate")
-            onClicked: generatePassword()
-            toolTipText: qsTr("Generate a random password")
+        ToolButton {
+            id: btnGenerateSecretKey
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
 
+            onClicked: generatePassword()
+            Keys.onReturnPressed: generatePassword()
+            Keys.onEnterPressed: generatePassword()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Generate"
+            Accessible.description: "Generate a random password"
+
+            ToolTip {
+                text: qsTr("Generate a random password")
+                delay: 1000
+                parent: parent
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/refresh.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
         }
     }
 

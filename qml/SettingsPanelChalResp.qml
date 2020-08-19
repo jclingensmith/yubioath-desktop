@@ -12,12 +12,36 @@ ColumnLayout {
             validator: validator
         }
 
-        StyledButton {
-            id: generateSecretKeyBtn
-            text: qsTr("Generate")
-            onClicked: generateSecretKey()
-            toolTipText: qsTr("Generate a random Secret Key")
+        ToolButton {
+            id: btnGenerateSecretKey
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
 
+            onClicked: generateSecretKey()
+            Keys.onReturnPressed: generateSecretKey()
+            Keys.onEnterPressed: generateSecretKey()
+
+            Accessible.role: Accessible.Button
+            Accessible.name: "Generate"
+            Accessible.description: "Generate a random secret key"
+
+            ToolTip {
+                text: qsTr("Generate a random secret key")
+                delay: 1000
+                parent: parent
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+
+            icon.source: "../images/refresh.svg"
+            icon.color: primaryColor
+            opacity: hovered ? fullEmphasis : lowEmphasis
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                enabled: false
+            }
         }
     }
 

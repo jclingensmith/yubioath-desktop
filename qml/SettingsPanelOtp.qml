@@ -82,8 +82,9 @@ StyledExpansionPanel {
 
         StyledComboBox {
             id: credentialTypeCombobox
+            noDefaultSelection: true
             label: qsTr("Credential type")
-            model: ["","Yubico OTP", "Challenge response", "Static password", "OATH-HOTP"]
+            model: ["", "Yubico OTP", "Challenge response", "Static password", "OATH-HOTP"]
 
             function getCurrentLabel() {
                 switch (credentialTypeCombobox.currentIndex) {
@@ -94,9 +95,9 @@ StyledExpansionPanel {
                 case 3:
                     return "Store a long static password on the YubiKey so you don't have to remember it."
                 case 4:
-                    return "OATH..."
+                    return "OATH-HOTP is a standard algorithm for calculating one-time passwords based on a secret and a counter."
                 default:
-                    return ""
+                    return "Select credential type to program slot with."
                 }
             }
         }
@@ -116,18 +117,21 @@ StyledExpansionPanel {
 
     ColumnLayout {
         visible: otpConfigurationPanel.credentialTypeYubicoOTP
+        Layout.rightMargin: -12
 
         SettingsPanelYubicoOtp{ id: yubicoOTP}
     }
 
     ColumnLayout {
         visible: otpConfigurationPanel.credentialTypeChallengeResponse
+        Layout.rightMargin: -12
 
         SettingsPanelChalResp{id: otpChallengeResponse}
     }
 
     ColumnLayout {
         visible: otpConfigurationPanel.credentialTypeStaticPassword
+        Layout.rightMargin: -12
 
         SettingsPanelOtpStatic{id: otpStaticPassword}
     }
