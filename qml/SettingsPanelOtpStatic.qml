@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.2
 
 ColumnLayout {
     property string keyboardLayout: allowNonModhex.checked ? 'US' : 'MODHEX'
+    property bool changed: otpStaticPassword.text !== ""
 
     RowLayout {
         StyledTextField {
@@ -56,6 +57,7 @@ ColumnLayout {
             ToolTip.text: qsTr("By default only modhex characters are allowed, enable this option to allow any (US Layout) characters")
         }
     }
+
 
     function generatePassword() {
         yubiKey.generateStaticPw(keyboardLayout, function (resp) {

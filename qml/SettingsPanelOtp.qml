@@ -120,6 +120,7 @@ StyledExpansionPanel {
         Layout.rightMargin: -12
 
         SettingsPanelYubicoOtp{ id: yubicoOTP}
+
     }
 
     ColumnLayout {
@@ -157,6 +158,8 @@ StyledExpansionPanel {
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             text: "Apply"
+            enabled: otpStaticPassword.changed || yubicoOTP.changed ||
+                     otpChallengeResponse.changed || oathHotp.changed
             onClicked: {
                 if (otpConfigurationPanel.credentialTypeStaticPassword) {
                     otpStaticPassword.programStaticPassword(slot+1)
@@ -178,3 +181,4 @@ StyledExpansionPanel {
         }
     }
 }
+
