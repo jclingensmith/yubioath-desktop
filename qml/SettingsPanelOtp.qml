@@ -158,8 +158,19 @@ StyledExpansionPanel {
         StyledButton {
             Layout.alignment: Qt.AlignRight | Qt.AlignTop
             text: "Apply"
-            enabled: otpStaticPassword.changed || yubicoOTP.changed ||
-                     otpChallengeResponse.changed || oathHotp.changed
+            enabled: {
+                if (otpConfigurationPanel.credentialTypeStaticPassword) {
+                    otpStaticPassword.changed
+                }else if (otpConfigurationPanel.credentialTypeYubicoOTP) {
+                    yubicoOTP.changed
+                }else if (otpConfigurationPanel.credentialTypeChallengeResponse) {
+                    otpChallengeResponse.changed
+                }else if (otpConfigurationPanel.credentialTypeOATHHOTP) {
+                    oathHotp.changed
+                }else {
+                    false
+                }
+            }
             onClicked: {
                 if (otpConfigurationPanel.credentialTypeStaticPassword) {
                     otpStaticPassword.programStaticPassword(slot+1)
