@@ -130,6 +130,22 @@ ColumnLayout {
         }
     }
 
+    RowLayout {
+        CheckBox {
+            id: enableUpload
+            text: qsTr("Upload")
+
+            ToolTip {
+                text: qsTr("Upload credential to YubiCloud (opens a web browser)")
+                delay: 1000
+                parent: parent
+                visible: parent.hovered
+                Material.foreground: toolTipForeground
+                Material.background: toolTipBackground
+            }
+        }
+    }
+
     function useSerial() {
         yubiKey.serialModhex(function (res) {
             publicIdInput.text = res
@@ -150,18 +166,27 @@ ColumnLayout {
 
     function programYubiOtp(slot) {
         yubiKey.programOtp(slot, publicIdInput.text,
-                           privateIdInput.text, secretKeyInput.text, function (resp) {
+                           privateIdInput.text, secretKeyInput.text,
+                           enableUpload.checked, function (resp) {
                                if (resp.success) {
-                                   navigator.snackBar(qsTr("Configured Yubico OTP credential"))
-                               } else {
-                                   if (resp.error_id === 'write error') {
-                                       navigator.snackBar(qsTr("Failed to modify. Make sure the YubiKey does not have restricted access."))
+                                   if (resp.upload_url) {
+                                       if (Qt.openUrlExternally(resp.upload_url)) {
+                                           navigator.snackBar(qsTr("Configured Yubico OTP credential. Preparing upload in web browser."))
+                                       } else {
+                                           snackbarError.show(qsTr("Configured Yubico OTP credential. Failed to open upload in web browser!"))
+                                       }
                                    } else {
-                                       navigator.snackBarError(
-                                                   navigator.getErrorMessage(
-                                                       resp.error_id))
+                                       navigator.snackBar(qsTr("Configured Yubico OTP credential"))
                                    }
-                               }
+                               } else {
+                                if (resp.error_id === 'write error') {
+                                    navigator.snackBar(qsTr("Failed to modify. Make sure the YubiKey does not have restricted access."))
+                                } else {
+                                    navigator.snackBarError(
+                                    navigator.getErrorMessage(
+                                    resp.error_id))
+                                    }
+                                }
                            })
     }
 }

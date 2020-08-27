@@ -25,7 +25,7 @@ from ykman.driver_ccid import (
 from ykman.oath import (
     ALGO, OATH_TYPE, OathController,
     CredentialData, Credential, Code, SW)
-from ykman.otp import OtpController
+from ykman.otp import OtpController, PrepareUploadFailed
 from ykman.settings import Settings
 from qr import qrparse, qrdecode
 from ykman.scancodes import KEYBOARD_LAYOUT
@@ -425,18 +425,35 @@ class Controller(object):
     def random_key(self, bytes):
         return b2a_hex(os.urandom(int(bytes))).decode('ascii')
 
-    def program_otp(self, slot, public_id, private_id, key,
+    def program_otp(self, slot, public_id, private_id, key, upload=False,
                     app_version='unknown'):
         key = a2b_hex(key)
         public_id = modhex_decode(public_id)
         private_id = a2b_hex(private_id)
 
+        upload_url = None
+
         with self._open_otp() as controller:
+            if upload:
+                try:
+                    upload_url = controller.prepare_upload_key(
+                        key, public_id, private_id,
+                        serial=self._current_serial,
+                        user_agent='ykman-qt/' + app_version)
+                except PrepareUploadFailed as e:
+                    logger.debug('YubiCloud upload failed', exc_info=e)
+                    return failure('upload_failed',
+                                   {'upload_errors': [err.name
+                                                      for err in e.errors]})
+
             controller.program_otp(slot, key, public_id, private_id)
 
         logger.debug('YubiOTP successfully programmed.')
 
-        return success()
+        if upload_url:
+            logger.debug('Upload url: %s', upload_url)
+
+        return success({'upload_url': upload_url})
 
     def set_mode(self, interfaces):
         with open_device(serial=self._current_serial) as dev:
