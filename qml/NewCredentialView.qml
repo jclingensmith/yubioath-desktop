@@ -3,6 +3,9 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
+import QZXing 2.3
+
+
 
 Flickable {
 
@@ -57,16 +60,38 @@ Flickable {
     }
 
     function scanQr() {
-        scanning = true
-        yubiKey.parseQr(ScreenShot.capture(), function (resp) {
-            scanning = false
-            if (resp.success) {
-                credential = resp
-            } else {
-                navigator.snackBarError(navigator.getErrorMessage(
-                                                                resp.error_id))
-            }
-        })
+        console.log("111")
+        decode()
+    }
+
+
+    function decode() {
+        decoder.decodeImageQML(imageToDecode);
+    }
+
+    Image{
+        id:imageToDecode
+        source: "data:image/png;base64," + ScreenShot.capture()
+    }
+
+    QZXing{
+        id: decoder
+
+        enabledDecoders: QZXing.DecoderFormat_QR_CODE
+
+            /////////////
+            //optional
+            tryHarderType: QZXing.TryHarderBehaviour_ThoroughScanning | QZXing.TryHarderBehaviour_Rotate
+
+            imageSourceFilter: QZXing.SourceFilter_ImageNormal //| QZXing.SourceFilter_ImageInverted
+            /////////////
+
+        onDecodingStarted: console.log("Decoding of image started...")
+
+        onTagFound: console.log("Barcode data: " + tag)
+
+
+        onDecodingFinished: console.log("Decoding finished " + (succeeded==true ? "successfully" :    "unsuccessfully") )
     }
 
     function addCredentialNoCopy() {
