@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QtWidgets>
 #include <QVariant>
+#include "QZXing.h"
 
 class ScreenShot: public QObject
 {
@@ -16,12 +17,18 @@ public:
         std::vector<QImage> screenshots(screens.length());
         std::transform(screens.begin(), screens.end(), screenshots.begin(), &ScreenShot::takeScreenshot);
 
-        QImage image = screenshots[0];
-        QByteArray ba;
-        QBuffer buffer(&ba);
-        buffer.open(QIODevice::WriteOnly);
-        image.save(&buffer, "PNG");
-        return QString(ba.toBase64());
+        QImage image = screenshots[0]; // Or give a path to an image with: QImage image ("path/to/image");
+        QZXing decoder;
+        //mandatory settings
+        decoder.setDecoder( QZXing::DecoderFormat_QR_CODE);
+        //optional settings
+        //decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal | QZXing::SourceFilter_ImageInverted);
+        decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
+        decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
+
+        //trigger decode
+        QString result = decoder.decodeImage(image);
+        return result;
     }
 
 private:
