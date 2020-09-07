@@ -11,13 +11,13 @@ class ScreenShot: public QObject
 public:
     explicit ScreenShot () : QObject() {}
     // Take a screenshot, convert it to a bitarray and return it with some metadata
-    Q_INVOKABLE QString capture() {
+    Q_INVOKABLE QString capture(QString fileName) {
 
         const QList<QScreen*> screens = QGuiApplication::screens();
         std::vector<QImage> screenshots(screens.length());
         std::transform(screens.begin(), screens.end(), screenshots.begin(), &ScreenShot::takeScreenshot);
 
-        QImage image = screenshots[0]; // Or give a path to an image with: QImage image ("path/to/image");
+        QImage image(fileName); // Or give a path to an image with: QImage image ("path/to/image");
         QZXing decoder;
         //mandatory settings
         decoder.setDecoder( QZXing::DecoderFormat_QR_CODE);

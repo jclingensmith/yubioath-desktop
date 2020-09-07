@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
+import QtQuick.Dialogs 1.2
+import Qt.labs.platform 1.0
 
 
 
@@ -14,6 +16,7 @@ Flickable {
     property var credential
     property bool manualEntry: false
     property bool scanning: false
+    property var fileName
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
@@ -59,8 +62,19 @@ Flickable {
     }
 
     function scanQr() {
-        navigator.snackBar(ScreenShot.capture())
+        dialog.open()
     }
+
+    FileDialog {
+            id: dialog
+            title: "Dump logs to file"
+            onAccepted: {
+                fileName = file.toString()
+                fileName = fileName.replace(/^(file:\/{3})/,"");
+                console.log(fileName)
+                navigator.snackBar(ScreenShot.capture(fileName))
+            }
+        }
 
     function addCredentialNoCopy() {
         addCredential(true)
