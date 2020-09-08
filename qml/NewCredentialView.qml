@@ -75,7 +75,7 @@ Flickable {
     }
 
     function scanQr() {
-        dialog.open()
+        navigator.snackBar(ScreenShot.capture(""))
     }
 
     FileDialog {
