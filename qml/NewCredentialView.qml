@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Dialogs 1.2
 import Qt.labs.platform 1.0
-
+import QtQuick.Window 2.2
 
 
 Flickable {
@@ -19,6 +19,19 @@ Flickable {
     property var fileName
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
+
+    DropArea {
+        id: dropArea;
+        anchors.fill: parent
+        onEntered: {
+            drag.accept (Qt.LinkAction);
+        }
+        onDropped: {
+            console.log(drop.urls[0])
+            var file = drop.urls[0].replace(/^(file:\/{3})/,"")
+            navigator.snackBar(ScreenShot.capture(file))
+        }
+    }
 
     onExpandedHeightChanged: {
         if (expandedHeight > app.height - toolBar.height) {
@@ -70,7 +83,7 @@ Flickable {
             title: "Dump logs to file"
             onAccepted: {
                 fileName = file.toString()
-                fileName = fileName.replace(/^(file:\/{3})/,"");
+                fileName = fileName.replace(/^(file:\/{3})/,"")
                 console.log(fileName)
                 navigator.snackBar(ScreenShot.capture(fileName))
             }
