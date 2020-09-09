@@ -83,9 +83,15 @@ Flickable {
         onExited: dropAreaOverlay.visible = false
         onDropped: {
             dropAreaOverlay.visible = false
-            console.log(drop.urls[0])
-            var file = drop.urls[0].replace(/^(file:\/{3})/,"")
-            navigator.snackBar(ScreenShot.capture(file))
+            var url = drop.urls[0]
+            if (url.includes("file")) {
+                var file = url.replace(/^(file:\/{3})/,"")
+                navigator.snackBar(ScreenShot.capture(file))
+            } else {
+                navigator.snackBar(url)
+            }
+
+
         }
     }
 
