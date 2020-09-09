@@ -17,7 +17,6 @@ public:
         std::vector<QImage> screenshots(screens.length());
         std::transform(screens.begin(), screens.end(), screenshots.begin(), &ScreenShot::takeScreenshot);
 
-
         QZXing decoder;
         //mandatory settings
         decoder.setDecoder( QZXing::DecoderFormat_QR_CODE);
@@ -29,8 +28,13 @@ public:
         //trigger decode
         QString result;
         if (fileName == "") {
-            QImage image(screenshots[0]);
-            result = decoder.decodeImage(image);
+            for (size_t i = 0; i < screenshots.size(); i++) {
+                QImage image(screenshots[i]);
+                result = decoder.decodeImage(image);
+                if (result != "") {
+                    break;
+                }
+            }
         } else {
             QImage image(fileName);
             result = decoder.decodeImage(image);
