@@ -20,13 +20,69 @@ Flickable {
 
     property var expandedHeight: content.implicitHeight + dynamicMargin
 
+    Pane {
+        id: dropAreaOverlay
+        anchors.centerIn: parent
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        width: app.width-8
+        height: app.height-toolBar.height-8
+        visible: false
+        z: 200
+        background: Rectangle {
+            anchors.fill: parent
+            color: isDark() ? "#ee111111" : "#eeeeeeee"
+        }
+
+        ColumnLayout {
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            anchors.centerIn: parent
+
+            StyledImage {
+                id: yubikeys
+                source: "../images/qr-scanner.svg"
+                color: primaryColor
+                opacity: lowEmphasis
+                iconWidth: 110
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                bottomPadding: 16
+            }
+
+            Label {
+                text: qsTr("Drop QR code")
+                font.pixelSize: 16
+                font.weight: Font.Normal
+                lineHeight: 1.5
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                color: primaryColor
+                opacity: highEmphasis
+            }
+            Label {
+                text: qsTr("Drag and drop any image containing a QR code here.")
+                horizontalAlignment: Qt.AlignHCenter
+                Layout.minimumWidth: 300
+                Layout.maximumWidth: app.width - dynamicMargin
+                                     < dynamicWidthSmall ? app.width - dynamicMargin : dynamicWidthSmall
+                Layout.rowSpan: 1
+                lineHeight: 1.1
+                wrapMode: Text.WordWrap
+                font.pixelSize: 13
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                color: primaryColor
+                opacity: lowEmphasis
+            }
+        }
+    }
+
     DropArea {
         id: dropArea;
         anchors.fill: parent
         onEntered: {
             drag.accept (Qt.LinkAction);
+            dropAreaOverlay.visible = true
         }
+        onExited: dropAreaOverlay.visible = false
         onDropped: {
+            dropAreaOverlay.visible = false
             console.log(drop.urls[0])
             var file = drop.urls[0].replace(/^(file:\/{3})/,"")
             navigator.snackBar(ScreenShot.capture(file))
